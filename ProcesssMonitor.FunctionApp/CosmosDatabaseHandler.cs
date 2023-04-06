@@ -6,7 +6,7 @@
     public static class CosmosDatabaseHandler
     {
 
-        private static string connectionString = "AccountEndpoint=https://fsyaccount.documents.azure.com:443/;AccountKey=sc4aGfilpIVKObg7vCnCiujtGX3H6n0pkgPbNm1E87XA9JLAiHQSuDXkhODWeJKRsd46y2wYoY0VgXUb9iK4ug==;";
+        private static string connectionString = "AccountEndpoint=https://fsyaccount.documents.azure.com:443/;AccountKey=************************************";
         private static string databaseId = "OperationDb";
         private static string containerId = "Operations";
 
