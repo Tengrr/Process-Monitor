@@ -22,7 +22,7 @@ namespace ProcessMonitor.ServiceHandler
     public class Agent
     {
         // connection string to your Service Bus namespace
-        static string connectionString = "Endpoint=sb://lucifer.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=MBvPBQvD7F2QfKNL2UvyAuN+45NPzj8q6KOsPvBoHOI=";
+        static string connectionString = "*******************************";
 
         // name of your Service Bus queue
         static string queue1Name = "queue1";
@@ -47,7 +47,7 @@ namespace ProcessMonitor.ServiceHandler
             //create the sender
             sender = client.CreateSender(queue2Name);
 
-            //将进程信息封装到processInfo对象中，建立一个processInfoList存放这些对象
+            //Encapsulate process information into processInfo and create a processInfoList to store these objects
             var processList = Process.GetProcesses().ToList();
             List<ProcessInfo> processInfoList = new List<ProcessInfo>();
             ProcessInfo processInfo;
@@ -60,15 +60,14 @@ namespace ProcessMonitor.ServiceHandler
                 processInfoList.Add(processInfo);
             }
 
-            //获得processInfoList的Json形式
+            // Serialize processInfoList
             JsonSerializer serializer = new JsonSerializer();
             StringWriter sw = new StringWriter();
             serializer.Serialize(new JsonTextWriter(sw), processInfoList);
             
-            //将operationid加在result前面，用'^'分隔、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、
             string result = id + "^" + sw.GetStringBuilder().ToString();
 
-            //将进程列表写入消息
+            // Write process list into message
             ServiceBusMessage message = new ServiceBusMessage(result);
             //message.ApplicationProperties["Id"] = id;
             //message.ApplicationProperties["ProcessList"] = sw.GetStringBuilder().ToString();
@@ -84,34 +83,34 @@ namespace ProcessMonitor.ServiceHandler
         // handle received messages
         static async Task MessageHandler(ProcessMessageEventArgs args)
         {
-            //查看消息中是否包含属性Name
+            // Check if message contains key "Name"
             if (args.Message.ApplicationProperties.ContainsKey("Name"))
             {
                 string name = args.Message.ApplicationProperties["Name"].ToString();
                 string id = args.Message.ApplicationProperties["Id"].ToString();
                 Console.WriteLine($"Name: {name}");
 
-                //处理Name="ProcessList"的消息
+                // Handle Name="ProcessList"
                 if (name.Equals("ProcessList"))
                 {
-                    //发送进程列表至另一队列
+                    // Send the process list to another queue
                     await ProcessListSender(id);
                     Console.WriteLine("1");
                 }
-                //处理Name="KillProcess"的消息
+                // Handle Name="KillProcess"
                 else if (name.Equals("KillProcess"))
                 {
-                    //获取进程pid
+                    // Get pid
                     int pid = int.Parse(args.Message.ApplicationProperties["Pid"].ToString());
                     Console.WriteLine($"Pid: {pid}");
 
-                    //通过pid杀死进程
+                    // Kill the process
                     Process killedprocess = Process.GetProcessById(pid);
                     killedprocess.Kill();
                     Console.WriteLine($"killed the process where pid={pid}");
                     Thread.Sleep(500);
 
-                    //发送进程列表至另一队列
+                    // Send the process list to another queue
                     await ProcessListSender(id);
                     Console.WriteLine("2");
                 }

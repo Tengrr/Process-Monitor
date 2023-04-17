@@ -39,7 +39,7 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "获取进程信息，根据pid杀死线程";
+            this.serviceInstaller1.Description = "Get process info, then kill the process by its id";
             this.serviceInstaller1.DisplayName = "Process Monitor";
             this.serviceInstaller1.ServiceName = "ProcessMonitorService";
             // 
