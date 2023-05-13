@@ -40,14 +40,13 @@ public class OperationsController : ControllerBase
 
 
     /// <summary>
-    /// 接口2：通过id在数据库中查找对应的返回结果
+    /// Get operations
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<Models.Operation>> Get(string id)
     {
-        //进行用户组身份验证
         string authHeader = HttpContext.Request.Headers["Authorization"];
         if (authHeader != null && authHeader.StartsWith("Bearer"))
         {
@@ -80,14 +79,13 @@ public class OperationsController : ControllerBase
         
     }
     /// <summary>
-    /// 接口1：用户将指令存入Azure Cosmos DB，并将该指令对象放入instructionqueue
+    /// Put operations
     /// </summary>
     /// <param name="newOperation"></param>
     /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Post(Models.Operation newOperation)
     {
-        //进行用户组身份验证
         string authHeader = HttpContext.Request.Headers["Authorization"];
         if (authHeader != null && authHeader.StartsWith("Bearer"))
         {
@@ -102,10 +100,10 @@ public class OperationsController : ControllerBase
 
             if (user.IsMemberOf(groupPrincipal))
             {
-                //1.将指令存入数据库
+                // Store the operation into db
                 await _operationsService.CreateAsync(newOperation);
 
-                //2.将指令发送至队列1
+                // Send the operation to service bus
                 await MessageSender.SendOperationToQueue(newOperation);
 
                 return CreatedAtAction(nameof(Get), new { newOperation.id }, newOperation);
