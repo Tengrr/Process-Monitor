@@ -1,4 +1,4 @@
 # ProcessMonitor
 
 ## Process Monitor's Architecture
-![Architecture](/Source/architecture.jpg)
+![Architecture](https://tengrraccountimage.blob.core.windows.net/image/architecture.jpg)
